@@ -1,0 +1,14 @@
+sequenceDiagram
+  autoNumber
+
+  participant UserAgent
+  participant app
+
+  UserAgent ->> +app: GET /tasks
+  Note over UserAgent : HTTP Request
+  rect rgb(248,248,248)
+    app ->> +Task: findAll()
+    Task -->> -app: tasks
+  end
+  app -->> -UserAgent: JSON
+  Note over app : HTTP Response

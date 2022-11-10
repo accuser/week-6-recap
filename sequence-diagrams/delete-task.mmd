@@ -1,0 +1,19 @@
+sequenceDiagram
+  autoNumber
+
+  participant UserAgent
+  participant app
+
+  UserAgent ->> app: GET /task/:id
+  activate app
+    Note over UserAgent : HTTP Request
+    rect rgb(248,248,248)
+      app ->> +Task: findOne()
+      Task -->> -app: task
+    end
+    alt found
+      app ->> +task: destroy()
+    end
+    app -->> UserAgent : 200 OK
+  Note over app : HTTP Response
+  deactivate app

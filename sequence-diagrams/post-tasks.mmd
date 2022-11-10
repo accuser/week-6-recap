@@ -1,0 +1,15 @@
+sequenceDiagram
+  autoNumber
+
+  participant UserAgent
+  participant app
+  participant Task
+
+    UserAgent ->> +app: POST /tasks
+    Note over UserAgent : HTTP Request
+    rect rgb(248,248,248)
+      app ->> +Task: create()
+      Task -->> -app: task
+    end
+    app -->> -UserAgent: 201 Created
+    Note over app : HTTP Response
