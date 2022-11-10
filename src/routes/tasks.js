@@ -1,7 +1,13 @@
 const { Router } = require("express");
+const getTask = require("../middleware/get-task");
 const Task = require("../models/task");
 
 const tasksRouter = Router();
+
+tasksRouter.use((req, res, next) => {
+  console.log("In tasks service...");
+  next();
+});
 
 /**
  * Handle GET /
@@ -15,10 +21,8 @@ tasksRouter.get("/", async (req, res) => {
 /**
  * Handle GET /:id
  */
-tasksRouter.get("/:id", async (req, res) => {
-  const id = Number(req.params.id);
-
-  const task = await Task.findOne({ where: { id } });
+tasksRouter.get("/:id", getTask, async (req, res) => {
+  const { task } = req;
 
   if (task) {
     res.json(task);
@@ -47,10 +51,8 @@ tasksRouter.post("/", async (req, res) => {
 /**
  * Handle DELETE /:id
  */
-tasksRouter.delete("/:id", async (req, res) => {
-  const id = Number(req.params.id);
-
-  const task = await Task.findOne({ where: { id } });
+tasksRouter.delete("/:id", getTask, async (req, res) => {
+  const task = req.task;
 
   if (task) {
     await task.destroy();
@@ -62,17 +64,17 @@ tasksRouter.delete("/:id", async (req, res) => {
 /**
  * Handle PUT /:id
  */
-tasksRouter.put("/:id", async (req, res) => {
-  const id = Number(req.params.id);
+tasksRouter.put("/:id", getTask, async (req, res) => {
   const description = req.body.description;
-
-  const task = await Task.findOne({ where: { id } });
+  const task = req.task;
 
   if (task) {
     await task.update({ description });
 
     res.sendStatus(200);
   } else {
+    const id = Number(req.params.id);
+
     Task.create({ id, description });
 
     res.sendStatus(200);
@@ -83,10 +85,8 @@ tasksRouter.put("/:id", async (req, res) => {
  * Handle PATCH /:id
  */
 tasksRouter.patch("/:id", async (req, res) => {
-  const id = Number(req.params.id);
   const description = req.body.description;
-
-  const task = await Task.findOne({ where: { id } });
+  const task = req.task;
 
   if (task) {
     await task.update({ description });
